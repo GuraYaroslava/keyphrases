@@ -19,6 +19,18 @@ class Element
      */
     private $minusWords = [];
 
+    private $maxDisplayOrdinaryWordsNumber = 0;
+
+    public function getMaxDisplayOrdinaryWordsNumber(): int
+    {
+        return $this->maxDisplayOrdinaryWordsNumber;
+    }
+
+    public function setMaxDisplayOrdinaryWordsNumber($value): void
+    {
+        $this->maxDisplayOrdinaryWordsNumber = $value;
+    }
+
     public function getOrdinaryWords(): array
     {
         return $this->ordinaryWords;

@@ -11,42 +11,60 @@ class Phrase
     private $ordinaryWords = [];
 
     /**
+     * Дубль обычных слов, с пустышками для красивого вывода в итоговой таблице
+     * @var array
+     */
+    private $displayOrdinaryWords = [];
+
+    /**
      * Минус-слова
      * @var array
      */
     private $minusWords = [];
 
-    public function __construct(array $ordinaryWords, array $minusWords)
+    /**
+     * Доп. минус-слова, полученные при "разминусовке"
+     * @var array
+     */
+    private $additionalMinusWords = [];
+
+    public function __construct(array $ordinaryWords, array $minusWords, array $displayOrdinaryWords = [], array $additionalMinusWords = [])
     {
         $this->ordinaryWords = $ordinaryWords;
         $this->minusWords = $minusWords;
+        $this->displayOrdinaryWords = empty($displayOrdinaryWords) ? $ordinaryWords : $displayOrdinaryWords;
+        $this->additionalMinusWords = $additionalMinusWords;
     }
 
-    /**
-     * Сгенерировать ключ по словам в фразе
-     * @return string
-     */
     public function getKey(): string
     {
-        sort($this->ordinaryWords);
-        sort($this->minusWords);
+        $a = $this->ordinaryWords;
+        sort($a);
 
-        $ordinarySubKey = join(" ", $this->ordinaryWords);
-        $minusSubKey = join(" ", $this->minusWords);
+        $b = $this->minusWords;
+        sort($b);
 
-        return $ordinarySubKey . " " . $minusSubKey;
+        return join(" ", $a) . " " . join(" ", $b);
     }
 
-    public function toArray(): array
+    public function toArray($totalMinusWordsHash): array
     {
-        return array_merge($this->ordinaryWords, $this->minusWords);
+        $displayMinusWords = array_fill(0, count($totalMinusWordsHash), "");
+        foreach ($this->minusWords as $word) {
+            $displayMinusWords[$totalMinusWordsHash[$word]] = $word;
+        }
+        foreach ($this->additionalMinusWords as $word) {
+            $displayMinusWords[$totalMinusWordsHash[$word]] = $word;
+        }
+
+        return array_merge($this->displayOrdinaryWords, $displayMinusWords);
     }
 
     public function __toString(): string
     {
         $parts = array_merge($this->ordinaryWords, $this->minusWords);
 
-        return join(' ', $parts);
+        return join(" ", $parts);
     }
 
     public function getOrdinaryWords(): array
@@ -59,8 +77,21 @@ class Phrase
         return $this->minusWords;
     }
 
-    public function addMinusWord($word)
+    public function getAdditionalMinusWords(): array
     {
-        $this->minusWords[] = $word;
+        return $this->additionalMinusWords;
+    }
+
+    public function addAdditionaMinusWord($word)
+    {
+        $this->additionalMinusWords[] = $word;
+    }
+
+    public function inMinusWords($word)
+    {
+        $isExists = in_array($word, $this->getMinusWords());
+        $isExists = $isExists || in_array($word, $this->getAdditionalMinusWords());
+
+        return $isExists;
     }
 }

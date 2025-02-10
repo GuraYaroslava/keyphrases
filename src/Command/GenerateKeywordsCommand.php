@@ -24,7 +24,7 @@ class GenerateKeywordsCommand extends Command
     {
         $this
             ->addArgument(
-                'directory',
+                "directory",
                 InputArgument::REQUIRED,
                 "save directory"
             )
@@ -45,7 +45,12 @@ class GenerateKeywordsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument("filename");
-        $inputText = file_get_contents($filename);
+        $inputText = "";
+        try {
+            $inputText = file_get_contents($filename);
+        } catch (\Exception $e) {
+            $output->writeln([$e->getMessage()]);
+        }
 
         if ("" === $inputText) {
             return Command::SUCCESS;
@@ -53,32 +58,37 @@ class GenerateKeywordsCommand extends Command
 
         $groups = explode("\n", trim($inputText));
         $phrases = PhraseGenerator::generate($groups);
-        $processedPhrases = PhraseProcessor::process($phrases);
+        list($processedPhrases, $totalMinusWordsHash) = PhraseProcessor::process($phrases);
 
         $display = $input->getOption("display");
 
         if ($display) {
             $table = new Table($output);
-            $headers = array_keys($processedPhrases[0]->toArray());
-            array_unshift($headers, "#");
-            $table->setHeaders($headers);
+
+            $maxWordsNumber = 0;
             foreach ($processedPhrases as $index => $processedPhrase) {
-                $row = $processedPhrase->toArray();
+                $row = $processedPhrase->toArray($totalMinusWordsHash);
+                $maxWordsNumber = max($maxWordsNumber, count($row));
                 array_unshift($row, $index + 1);
                 $table->addRow($row);
             }
+
+            $headers = range(1, $maxWordsNumber);
+            array_unshift($headers, "#");
+            $table->setHeaders($headers);
+
             $table->render();
         }
 
-        $directory = $input->getArgument('directory');
+        $directory = $input->getArgument("directory");
         $filesystem = new Filesystem();
 
         if (!$filesystem->exists($directory)) {
             $filesystem->mkdir($directory);
         }
 
-        $filename = 'phrases_' . date('Y-m-d_H-i-s') . '.txt';
-        $filepath = $directory . '/' . $filename;
+        $filename = "phrases_" . date("Y-m-d_H-i-s") . ".txt";
+        $filepath = $directory . "/" . $filename;
         $data = array_map(function ($phrase) {
             return (string) $phrase;
         }, $processedPhrases);

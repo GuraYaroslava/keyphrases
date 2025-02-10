@@ -21,7 +21,7 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["C", "D"], []),
         ];
 
-        $result = PhraseProcessor::process($phrases);
+        list($result,) = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $result);
     }
@@ -35,10 +35,10 @@ class PhraseProcessorTest extends TestCase
 
         $expectedPhrases = [
             new Phrase(["A", "B"], []),
-            new Phrase(["A"], ["-B"]),
+            new Phrase(["A"], [], [], ["-B"]),
         ];
 
-        $result = PhraseProcessor::process($phrases);
+        list($result,) = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $result);
     }
@@ -47,7 +47,7 @@ class PhraseProcessorTest extends TestCase
     {
         $phrases = [];
         $expectedPhrases = [];
-        $result = PhraseProcessor::process($phrases);
+        list($result,) = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $result);
     }
@@ -63,7 +63,7 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["C", "D"], []),
         ];
 
-        $result = PhraseProcessor::process($phrases);
+        list($result,) = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $result);
     }
@@ -78,11 +78,11 @@ class PhraseProcessorTest extends TestCase
 
         $expectedPhrases = [
             new Phrase(["A", "B", "C"], []),
-            new Phrase(["A", "B"], ["-C"]),
-            new Phrase(["A"], ["-B", "-C"]),
+            new Phrase(["A", "B"], [], [], ["-C"]),
+            new Phrase(["A"], [], [], ["-B", "-C"]),
         ];
 
-        $result = PhraseProcessor::process($phrases);
+        list($result,) = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $result);
     }

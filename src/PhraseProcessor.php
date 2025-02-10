@@ -22,9 +22,7 @@ class PhraseProcessor
         $unique = [];
         foreach ($phrases as $phrase) {
             $key = $phrase->getKey();
-            if (!isset($unique[$key])) {
-                $unique[$key] = $phrase;
-            }
+            $unique[$key] = $phrase;
         }
 
         return array_values($unique);
@@ -37,16 +35,26 @@ class PhraseProcessor
      */
     private static function applyMinusWords(array $phrases): array
     {
-        // фразы с большим кол-вом обычных слов будут вначале массива
-        usort($phrases, function ($a, $b) {
+        $totalMinusWords = [];
+        $phrasesMap = [];
+        foreach ($phrases as $phrase) {
+            $phrasesMap[$phrase->getKey()] = $phrase;
+            foreach ($phrase->getMinusWords() as $word) {
+                $totalMinusWords[$word] = 1;
+            }
+        }
+
+        $sortedPhrases = $phrases;
+        usort($sortedPhrases, function ($a, $b) {
             return count($b->getOrdinaryWords()) - count($a->getOrdinaryWords());
         });
 
-        foreach ($phrases as $i => $currentPhrase) {
+        foreach ($sortedPhrases as $i => $phrase) {
+            $currentPhrase = $phrasesMap[$phrase->getKey()];
             $currentWords = $currentPhrase->getOrdinaryWords();
 
             for ($j = 0; $j < $i; $j++) {
-                $otherPhrase = $phrases[$j];
+                $otherPhrase = $phrasesMap[$sortedPhrases[$j]->getKey()];
                 $otherWords = $otherPhrase->getOrdinaryWords();
                 $diffWords = array_diff($currentWords, $otherWords);
                 $isSubSet = count($diffWords) === 0 && count($otherWords) > count($currentWords);
@@ -54,14 +62,23 @@ class PhraseProcessor
                 if ($isSubSet) {
                     $diff = array_diff($otherWords, $currentWords);
                     foreach ($diff as $word) {
-                        if (!in_array("-$word", $currentPhrase->getMinusWords())) {
-                            $currentPhrase->addMinusWord("-$word");
+                        $isNewMinusWord = !$currentPhrase->inMinusWords("-$word");
+                        if ($isNewMinusWord) {
+                            $currentPhrase->addAdditionaMinusWord("-$word");
+                            $totalMinusWords["-$word"] = 1;
                         }
                     }
                 }
             }
         }
 
-        return $phrases;
+        $totalMinusWordsHash = [];
+        if (count($totalMinusWords)) {
+            $keys = array_keys($totalMinusWords);
+            $values = range(0, count($keys) - 1);
+            $totalMinusWordsHash = array_combine($keys, $values);
+        }
+
+        return [array_values($phrasesMap), $totalMinusWordsHash];
     }
 }
