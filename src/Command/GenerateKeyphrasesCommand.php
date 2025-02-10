@@ -45,24 +45,19 @@ class GenerateKeyphrasesCommand extends Command
 
         $groups = explode("\n", trim($inputText));
         $phrases = PhraseGenerator::generate($groups);
-        list($processedPhrases, $totalMinusWordsHash) = PhraseProcessor::process($phrases);
+        $phraseProcessor = new PhraseProcessor($phrases);
 
         $display = $input->getOption("display");
         if ($display) {
-            $table = new Table($output);
-
-            $maxWordsNumber = 0;
-            foreach ($processedPhrases as $index => $processedPhrase) {
-                $row = $processedPhrase->toArray($totalMinusWordsHash);
-                $maxWordsNumber = max($maxWordsNumber, count($row));
-                array_unshift($row, $index + 1);
-                $table->addRow($row);
+            $rows = $phraseProcessor->getTableRows();
+            if (count($rows) < 1) {
+                return Command::SUCCESS;
             }
 
-            $headers = range(1, $maxWordsNumber);
-            array_unshift($headers, "#");
+            $table = new Table($output);
+            $table->addRows($rows);
+            $headers = $phraseProcessor->getTableHeader(count($rows[0]));
             $table->setHeaders($headers);
-
             $table->render();
         }
 
@@ -74,8 +69,7 @@ class GenerateKeyphrasesCommand extends Command
 
         $filename = "phrases_" . date("Y-m-d_H-i-s") . ".csv";
         $filepath = $directory . "/" . $filename;
-        $data = array_map(fn($phrase) => (string) $phrase, $processedPhrases);
-        $content = join("\n", $data);
+        $content = $phraseProcessor->getCSV();
         $filesystem->dumpFile($filepath, $content);
 
         $message = "The results file has been successfully saved: $filepath";

@@ -15,13 +15,11 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["A", "B"]),
             new Phrase(["C", "D"]),
         ];
-
         $expectedPhrases = [
             new Phrase(["A", "B"]),
             new Phrase(["C", "D"]),
         ];
-
-        list($actualPhrases,) = PhraseProcessor::process($phrases);
+        $actualPhrases = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $actualPhrases);
     }
@@ -32,13 +30,11 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["A", "B"]),
             new Phrase(["A"]),
         ];
-
         $expectedPhrases = [
             new Phrase(["A", "B"], [], [], []),
             new Phrase(["A"],      [], [], ["-B"]),
         ];
-
-        list($actualPhrases,) = PhraseProcessor::process($phrases);
+        $actualPhrases = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $actualPhrases);
     }
@@ -47,7 +43,7 @@ class PhraseProcessorTest extends TestCase
     {
         $phrases = [];
         $expectedPhrases = [];
-        list($actualPhrases,) = PhraseProcessor::process($phrases);
+        $actualPhrases = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $actualPhrases);
     }
@@ -62,8 +58,7 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["A", "B"]),
             new Phrase(["C", "D"]),
         ];
-
-        list($actualPhrases,) = PhraseProcessor::process($phrases);
+        $actualPhrases = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $actualPhrases);
     }
@@ -75,14 +70,12 @@ class PhraseProcessorTest extends TestCase
             new Phrase(["A", "B"]),
             new Phrase(["A"]),
         ];
-
         $expectedPhrases = [
             new Phrase(["A", "B", "C"], [], [], []),
             new Phrase(["A", "B"],      [], [], ["-C"]),
             new Phrase(["A"],           [], [], ["-B", "-C"]),
         ];
-
-        list($actualPhrases,) = PhraseProcessor::process($phrases);
+        $actualPhrases = PhraseProcessor::process($phrases);
 
         $this->assertEquals($expectedPhrases, $actualPhrases);
     }

@@ -13,9 +13,9 @@ class PhraseGeneratorTest extends TestCase
     {
         $groups = ["Владивосток"];
         $expectedPhrases = [new Phrase(["Владивосток"])];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithMultipleGroups(): void
@@ -27,60 +27,58 @@ class PhraseGeneratorTest extends TestCase
             new Phrase(["BBB", "CCC"]),
             new Phrase(["BBB", "DDD"]),
         ];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithEmptyGroups(): void
     {
         $groups = ["", ""];
         $expectedPhrases = [new Phrase()];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithMinusWords(): void
     {
         $groups = ["AAA -BBB", "CCC -DDD"];
         $expectedPhrases = [new Phrase(["AAA", "CCC"], ["-BBB", "-DDD"])];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithShortWords(): void
     {
         $groups = ["AAA -BBB", "C -DDD"];
         $expectedPhrases = [new Phrase(["AAA", "+C"], ["-BBB", "-DDD"])];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithInvalidSymbols(): void
     {
         $groups = ["AAA -BBB", "C DDD-ddd"];
         $expectedPhrases = [new Phrase(["AAA", "+C", "DDD", "ddd"], ["-BBB"])];
-        $phrases = PhraseGenerator::generate($groups);
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 
     public function testGenerateWithMixedGroups(): void
     {
         $groups = ["AAA, B", "CCC, DDD-ddd -CCC"];
-
         $expectedPhrases = [
             new Phrase(["AAA", "CCC"],        [],       ["AAA", "CCC", ""]),
             new Phrase(["AAA", "DDD", "ddd"], ["-CCC"], []),
             new Phrase(["+B", "CCC"],         [],       ["+B", "CCC", ""]),
             new Phrase(["+B", "DDD", "ddd"],  ["-CCC"], []),
         ];
+        $actualPhrases = PhraseGenerator::generate($groups);
 
-        $phrases = PhraseGenerator::generate($groups);
-
-        $this->assertEquals($expectedPhrases, $phrases);
+        $this->assertEquals($expectedPhrases, $actualPhrases);
     }
 }

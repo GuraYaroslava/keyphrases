@@ -31,19 +31,6 @@ class Phrase
         return join(" ", $a) . " " . join(" ", $b);
     }
 
-    public function toArray($totalMinusWordsHash): array
-    {
-        $displayMinusWords = array_fill(0, count($totalMinusWordsHash), "");
-        foreach ($this->minusWords as $word) {
-            $displayMinusWords[$totalMinusWordsHash[$word]] = $word;
-        }
-        foreach ($this->additionalMinusWords as $word) {
-            $displayMinusWords[$totalMinusWordsHash[$word]] = $word;
-        }
-
-        return array_merge($this->displayOrdinaryWords, $displayMinusWords);
-    }
-
     public function __toString(): string
     {
         $parts = array_merge($this->ordinaryWords, $this->minusWords);
@@ -69,6 +56,16 @@ class Phrase
     public function addAdditionaMinusWord($word)
     {
         $this->additionalMinusWords[] = $word;
+    }
+
+    public function getAllMinusWords(): array
+    {
+        return array_merge($this->minusWords, $this->additionalMinusWords);
+    }
+
+    public function getDisplayOrdinaryWords(): array
+    {
+        return $this->displayOrdinaryWords;
     }
 
     public function inMinusWords($word)

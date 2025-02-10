@@ -4,12 +4,19 @@ namespace App;
 
 class PhraseProcessor
 {
-    public static function process(array $phrases): array
-    {
-        $phrases = self::deduplicate($phrases);
-        $result = self::applyMinusWords($phrases);
+    private $processedPhrases = [];
 
-        return $result;
+    public function __construct(array $phrases)
+    {
+        $this->processedPhrases = self::process($phrases);
+    }
+
+    public static function process(array $phrases = []): array
+    {
+        $deduplicatedPhrases = self::deduplicate($phrases);
+        $processedPhrases = self::applyMinusWords($deduplicatedPhrases);
+
+        return $processedPhrases;
     }
 
     private static function deduplicate(array $phrases): array
@@ -24,13 +31,9 @@ class PhraseProcessor
 
     private static function applyMinusWords(array $phrases): array
     {
-        $totalMinusWords = [];
         $phrasesMap = [];
         foreach ($phrases as $phrase) {
             $phrasesMap[$phrase->getKey()] = $phrase;
-            foreach ($phrase->getMinusWords() as $word) {
-                $totalMinusWords[$word] = 1;
-            }
         }
 
         $sortedPhrases = $phrases;
@@ -61,13 +64,57 @@ class PhraseProcessor
             }
         }
 
-        $totalMinusWordsHash = [];
-        if (count($totalMinusWords)) {
-            $keys = array_keys($totalMinusWords);
-            $values = range(0, count($keys) - 1);
-            $totalMinusWordsHash = array_combine($keys, $values);
+        return array_values($phrasesMap);
+    }
+
+    public function getTableRows(): array
+    {
+        $allMinusWordsHash = [];
+        $value = 0;
+        foreach ($this->processedPhrases as $phrase) {
+            foreach ($phrase->getAllMinusWords() as $key) {
+                if (!isset($allMinusWordsHash[$key])) {
+                    $allMinusWordsHash[$key] = $value++;
+                }
+            }
         }
 
-        return [array_values($phrasesMap), $totalMinusWordsHash];
+        $rows = [];
+        foreach ($this->processedPhrases as $index => $phrase) {
+            $row = $this->getTableRow($phrase, $allMinusWordsHash);
+            array_unshift($row, $index + 1);
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    public function getTableRow($phrase, array $allMinusWordsHash): array
+    {
+        $displayMinusWords = array_fill(0, count($allMinusWordsHash), "");
+        foreach ($phrase->getMinusWords() as $word) {
+            $displayMinusWords[$allMinusWordsHash[$word]] = $word;
+        }
+        foreach ($phrase->getAdditionalMinusWords() as $word) {
+            $displayMinusWords[$allMinusWordsHash[$word]] = $word;
+        }
+
+        return array_merge($phrase->getDisplayOrdinaryWords(), $displayMinusWords);
+    }
+
+    public function getTableHeader(int $columnNumber): array
+    {
+        $headers = range(1, $columnNumber - 1);
+        array_unshift($headers, "#");
+
+        return $headers;
+    }
+
+    public function getCSV(): string
+    {
+        $phrases = $this->processedPhrases;
+        $rows = array_map(fn($phrase) => (string) $phrase, $phrases);
+
+        return join("\n", $rows);
     }
 }
