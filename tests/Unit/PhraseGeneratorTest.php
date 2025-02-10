@@ -12,7 +12,7 @@ class PhraseGeneratorTest extends TestCase
     public function testGenerateWithSingleGroup(): void
     {
         $groups = ["Владивосток"];
-        $expectedPhrases = [new Phrase(["Владивосток"], [])];
+        $expectedPhrases = [new Phrase(["Владивосток"])];
         $phrases = PhraseGenerator::generate($groups);
 
         $this->assertEquals($expectedPhrases, $phrases);
@@ -22,10 +22,10 @@ class PhraseGeneratorTest extends TestCase
     {
         $groups = ["AAA, BBB", "CCC, DDD"];
         $expectedPhrases = [
-            new Phrase(["AAA", "CCC"], []),
-            new Phrase(["AAA", "DDD"], []),
-            new Phrase(["BBB", "CCC"], []),
-            new Phrase(["BBB", "DDD"], []),
+            new Phrase(["AAA", "CCC"]),
+            new Phrase(["AAA", "DDD"]),
+            new Phrase(["BBB", "CCC"]),
+            new Phrase(["BBB", "DDD"]),
         ];
         $phrases = PhraseGenerator::generate($groups);
 
@@ -35,7 +35,7 @@ class PhraseGeneratorTest extends TestCase
     public function testGenerateWithEmptyGroups(): void
     {
         $groups = ["", ""];
-        $expectedPhrases = [new Phrase([], [])];
+        $expectedPhrases = [new Phrase()];
         $phrases = PhraseGenerator::generate($groups);
 
         $this->assertEquals($expectedPhrases, $phrases);
@@ -73,10 +73,10 @@ class PhraseGeneratorTest extends TestCase
         $groups = ["AAA, B", "CCC, DDD-ddd -CCC"];
 
         $expectedPhrases = [
-            new Phrase(["AAA", "CCC"], [],  ["AAA", "CCC", ""]),
-            new Phrase(["AAA", "DDD", "ddd"], ["-CCC"]),
-            new Phrase(["+B", "CCC"], [], ["+B", "CCC", ""]),
-            new Phrase(["+B", "DDD", "ddd"], ["-CCC"]),
+            new Phrase(["AAA", "CCC"],        [],       ["AAA", "CCC", ""]),
+            new Phrase(["AAA", "DDD", "ddd"], ["-CCC"], []),
+            new Phrase(["+B", "CCC"],         [],       ["+B", "CCC", ""]),
+            new Phrase(["+B", "DDD", "ddd"],  ["-CCC"], []),
         ];
 
         $phrases = PhraseGenerator::generate($groups);

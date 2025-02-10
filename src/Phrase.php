@@ -4,31 +4,15 @@ namespace App;
 
 class Phrase
 {
-    /**
-     * Обычные слова
-     * @var array
-     */
     private $ordinaryWords = [];
 
-    /**
-     * Дубль обычных слов, с пустышками для красивого вывода в итоговой таблице
-     * @var array
-     */
     private $displayOrdinaryWords = [];
 
-    /**
-     * Минус-слова
-     * @var array
-     */
     private $minusWords = [];
 
-    /**
-     * Доп. минус-слова, полученные при "разминусовке"
-     * @var array
-     */
     private $additionalMinusWords = [];
 
-    public function __construct(array $ordinaryWords, array $minusWords, array $displayOrdinaryWords = [], array $additionalMinusWords = [])
+    public function __construct(array $ordinaryWords = [], array $minusWords = [], array $displayOrdinaryWords = [], array $additionalMinusWords = [])
     {
         $this->ordinaryWords = $ordinaryWords;
         $this->minusWords = $minusWords;
@@ -89,8 +73,8 @@ class Phrase
 
     public function inMinusWords($word)
     {
-        $isExists = in_array($word, $this->getMinusWords());
-        $isExists = $isExists || in_array($word, $this->getAdditionalMinusWords());
+        $isExists = in_array($word, $this->minusWords);
+        $isExists = $isExists || in_array($word, $this->additionalMinusWords);
 
         return $isExists;
     }

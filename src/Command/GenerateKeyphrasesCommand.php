@@ -23,22 +23,9 @@ class GenerateKeyphrasesCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument(
-                "directory",
-                InputArgument::REQUIRED,
-                "save directory"
-            )
-            ->addArgument(
-                "filename",
-                InputArgument::REQUIRED,
-                "source file"
-            )
-            ->addOption(
-                "display",
-                "d",
-                InputOption::VALUE_NONE,
-                "output the result to the console",
-            )
+            ->addArgument("directory", InputArgument::REQUIRED, "save directory")
+            ->addArgument("filename", InputArgument::REQUIRED, "source file")
+            ->addOption("display", "d", InputOption::VALUE_NONE, "display in the terminal",)
         ;
     }
 
@@ -61,7 +48,6 @@ class GenerateKeyphrasesCommand extends Command
         list($processedPhrases, $totalMinusWordsHash) = PhraseProcessor::process($phrases);
 
         $display = $input->getOption("display");
-
         if ($display) {
             $table = new Table($output);
 
@@ -82,16 +68,13 @@ class GenerateKeyphrasesCommand extends Command
 
         $directory = $input->getArgument("directory");
         $filesystem = new Filesystem();
-
         if (!$filesystem->exists($directory)) {
             $filesystem->mkdir($directory);
         }
 
         $filename = "phrases_" . date("Y-m-d_H-i-s") . ".csv";
         $filepath = $directory . "/" . $filename;
-        $data = array_map(function ($phrase) {
-            return (string) $phrase;
-        }, $processedPhrases);
+        $data = array_map(fn($phrase) => (string) $phrase, $processedPhrases);
         $content = join("\n", $data);
         $filesystem->dumpFile($filepath, $content);
 

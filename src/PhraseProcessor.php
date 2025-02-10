@@ -7,32 +7,21 @@ class PhraseProcessor
     public static function process(array $phrases): array
     {
         $phrases = self::deduplicate($phrases);
-        $phrases = self::applyMinusWords($phrases);
+        $result = self::applyMinusWords($phrases);
 
-        return $phrases;
+        return $result;
     }
 
-    /**
-     * Избавиться от дублей
-     * @param array $phrases
-     * @return array
-     */
     private static function deduplicate(array $phrases): array
     {
         $unique = [];
         foreach ($phrases as $phrase) {
-            $key = $phrase->getKey();
-            $unique[$key] = $phrase;
+            $unique[$phrase->getKey()] = $phrase;
         }
 
         return array_values($unique);
     }
 
-    /**
-     * "Разминусовать" фразы так, чтобы они непересекались по ключевым словам
-     * @param array $phrases
-     * @return array
-     */
     private static function applyMinusWords(array $phrases): array
     {
         $totalMinusWords = [];

@@ -48,8 +48,7 @@ class PhraseGenerator
                 }
             }
 
-            $phrase = new Phrase($ordinaryWords, $minusWords, $displayOrdinaryWords);
-            $phrases[] = $phrase;
+            $phrases[] = new Phrase($ordinaryWords, $minusWords, $displayOrdinaryWords);
 
             return;
         }

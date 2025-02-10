@@ -2,21 +2,10 @@
 
 namespace App;
 
-/**
- * Элемент группы, ключевое словочетание в строке входных данных
- */
 class Element
 {
-    /**
-     * Обычные слова
-     * @var array
-     */
     private $ordinaryWords = [];
 
-    /**
-     * Минус-слова
-     * @var array
-     */
     private $minusWords = [];
 
     private $maxDisplayOrdinaryWordsNumber = 0;
@@ -41,11 +30,6 @@ class Element
         return $this->minusWords;
     }
 
-    /**
-     * Создать сущность элемента группы из строки
-     * @param string $element
-     * @return Element
-     */
     public static function fromString(string $element): self
     {
         $instance = new self();
@@ -68,13 +52,7 @@ class Element
         return $instance;
     }
 
-    /**
-     * Обработать все слова элемента группы
-     * @param array $words
-     * @param array $result
-     * @return void
-     */
-    private static function processWords(array $words, array &$result): void
+    private static function processWords(array $words, array &$processedWords): void
     {
         foreach ($words as $word) {
             $correctWord = self::wordCorrect($word);
@@ -83,35 +61,30 @@ class Element
             }
             $subWords = preg_split('/\s+/', $correctWord);
             if (count($subWords) > 1) {
-                self::processWords($subWords, $result);
+                self::processWords($subWords, $processedWords);
             } else {
                 $wordHead = mb_substr($correctWord, 0, 1);
                 if (mb_strlen($correctWord) <= 2 && $wordHead !== '+') {
                     $correctWord = '+' . $correctWord;
                 }
 
-                $result[] = $correctWord;
+                $processedWords[] = $correctWord;
             }
         }
     }
 
-    /**
-     * Корректировать слово элемента группы
-     * @param string $word
-     * @return string
-     */
     private static function wordCorrect(string $word): string
     {
-        $result = '';
+        $correctedWord = '';
         $wordHead = mb_substr($word, 0, 1);
         $wordBody = mb_substr($word, 1);
 
         if ($wordHead === '-' || $wordHead === '+' || $wordHead === '!') {
-            $result = $wordHead . preg_replace('/[^\p{L}\p{N}]/u', ' ', $wordBody);
+            $correctedWord = $wordHead . preg_replace('/[^\p{L}\p{N}]/u', ' ', $wordBody);
         } else {
-            $result = preg_replace('/[^\p{L}\p{N}]/u', ' ', $word);
+            $correctedWord = preg_replace('/[^\p{L}\p{N}]/u', ' ', $word);
         }
 
-        return trim($result);
+        return trim($correctedWord);
     }
 }
