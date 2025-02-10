@@ -1,8 +1,9 @@
-# Генератор ключевых слов
+# Генератор ключевых фраз
 
 Этот проект представляет собой symfony-приложение с консольной командой.
-Результатом выполнения команды является создание текстового файла,
-который содержит ключевые фразы для рекламного объявления.
+Результатом выполнения команды является создание текстового файла в формате
+`phrases_Y-m-d_H-i-s.csv`, который содержит ключевые фразы для рекламного
+объявления.
 
 ## Установка
 
@@ -12,8 +13,8 @@
 
 2. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/GuraYaroslava/keywords.git
-   cd keywords
+   git clone https://github.com/GuraYaroslava/keyphrases.git
+   cd keyphrases
    ```
 
 3. Установите зависимости:
@@ -26,7 +27,7 @@
 Чтобы запустить команду локально, выполните:
 
 ```bash
-php bin/console app:generate-keywords <directory> <file> [--display]
+php bin/console app:generate-keyphrases <directory> <file> [--display]
 ```
 
 - `<directory>` — путь к директории, куда сохранится результат выполенния
@@ -37,7 +38,7 @@ php bin/console app:generate-keywords <directory> <file> [--display]
 #### Пример:
 
 ```bash
-php bin/console app:generate-keywords /path/to/directory example.txt -d
+php bin/console app:generate-keyphrases /path/to/directory example.txt -d
 ```
 
 ## Тестирование

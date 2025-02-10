@@ -64,7 +64,7 @@ class Phrase
     {
         $parts = array_merge($this->ordinaryWords, $this->minusWords);
 
-        return join(" ", $parts);
+        return join(";", $parts);
     }
 
     public function getOrdinaryWords(): array

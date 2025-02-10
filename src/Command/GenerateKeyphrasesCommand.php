@@ -15,10 +15,10 @@ use App\PhraseProcessor;
 
 
 #[AsCommand(
-    name: "app:generate-keywords",
-    description: "Generating keywords for search advertisements.",
+    name: "app:generate-keyphrases",
+    description: "Generating keyphrases for search advertisements.",
 )]
-class GenerateKeywordsCommand extends Command
+class GenerateKeyphrasesCommand extends Command
 {
     protected function configure(): void
     {
@@ -87,7 +87,7 @@ class GenerateKeywordsCommand extends Command
             $filesystem->mkdir($directory);
         }
 
-        $filename = "phrases_" . date("Y-m-d_H-i-s") . ".txt";
+        $filename = "phrases_" . date("Y-m-d_H-i-s") . ".csv";
         $filepath = $directory . "/" . $filename;
         $data = array_map(function ($phrase) {
             return (string) $phrase;
