@@ -85,7 +85,7 @@ EOF;
         $this->filesystem->remove([$filename]);
     }
 
-    public function testCommandInputFileNotFound(): void
+    public function testCommandFalture(): void
     {
         $this->filesystem->remove($this->inputFile);
 
