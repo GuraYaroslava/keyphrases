@@ -23,15 +23,15 @@ class GenerateKeyphrasesCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument("directory", InputArgument::REQUIRED, "save directory")
-            ->addArgument("filename", InputArgument::REQUIRED, "source file")
+            ->addArgument("input", InputArgument::REQUIRED, "source file")
+            ->addArgument("output", InputArgument::REQUIRED, "save directory")
             ->addOption("display", "d", InputOption::VALUE_NONE, "display in the terminal",)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $filename = $input->getArgument("filename");
+        $filename = $input->getArgument("input");
         $inputText = "";
         try {
             $inputText = file_get_contents($filename);
@@ -39,11 +39,11 @@ class GenerateKeyphrasesCommand extends Command
             $output->writeln([$e->getMessage()]);
         }
 
-        if ("" === $inputText) {
+        if (empty($inputText)) {
             $message = "Source data is empty!";
             $output->writeln([$message]);
 
-            return Command::SUCCESS;
+            return Command::FAILURE;
         }
 
         $groups = explode("\n", trim($inputText));
@@ -66,7 +66,7 @@ class GenerateKeyphrasesCommand extends Command
             $table->render();
         }
 
-        $directory = $input->getArgument("directory");
+        $directory = $input->getArgument("output");
         $filesystem = new Filesystem();
         if (!$filesystem->exists($directory)) {
             $filesystem->mkdir($directory);

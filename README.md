@@ -27,18 +27,18 @@
 Чтобы запустить команду локально, выполните:
 
 ```bash
-php bin/console app:generate-keyphrases <directory> <file> [--display]
+php bin/console app:generate-keyphrases <input> <output> [--display]
 ```
 
-- `<directory>` — путь к директории, куда сохранится результат выполенния
+- `<input>` — имя файла с исходными данными для генерации ключевых фраз (обязательный аргумент).
+- `<output>` — путь к директории, куда сохранится результат выполенния
 команды (обязательный аргумент).
-- `<file>` — имя файла с исходными данными для генерации ключевых фраз (обязательный аргумент).
 - `--display` — флаг, при использовании которого результат выполнения команды будет выведен в терминал (опционально). Короткий вариант `-d`.
 
 #### Пример:
 
 ```bash
-php bin/console app:generate-keyphrases /path/to/directory example.txt -d
+php bin/console app:generate-keyphrases example.txt /path/to/directory -d
 ```
 
 ## Тестирование
