@@ -4,19 +4,31 @@ namespace App;
 
 class PhraseProcessor
 {
+    private $originalPhrases = [];
+
     private $processedPhrases = [];
+
+    private $phraseTableRows = [];
+
+    private $phraseTableHeaders = [];
 
     public function __construct(array $phrases)
     {
-        $this->processedPhrases = self::process($phrases);
+        $this->originalPhrases = $phrases;
     }
 
-    public static function process(array $phrases = []): array
+    public static function process(array $phrases): array
     {
         $deduplicatedPhrases = self::deduplicate($phrases);
         $processedPhrases = self::applyMinusWords($deduplicatedPhrases);
 
         return $processedPhrases;
+    }
+
+    public function run()
+    {
+        $phrases = $this->originalPhrases;
+        $this->processedPhrases = self::process($phrases);
     }
 
     private static function deduplicate(array $phrases): array
@@ -69,6 +81,10 @@ class PhraseProcessor
 
     public function getTableRows(): array
     {
+        if (count($this->phraseTableRows)) {
+            return $this->phraseTableRows;
+        }
+
         $allMinusWordsHash = [];
         $value = 0;
         foreach ($this->processedPhrases as $phrase) {
@@ -86,25 +102,33 @@ class PhraseProcessor
             $rows[] = $row;
         }
 
-        return $rows;
+        $this->phraseTableRows = $rows;
+
+        return $this->phraseTableRows;
     }
 
-    public function getTableRow($phrase, array $allMinusWordsHash): array
+    private function getTableRow($phrase, array $allMinusWordsHash): array
     {
         $displayMinusWords = array_fill(0, count($allMinusWordsHash), "");
-        foreach ($phrase->getMinusWords() as $word) {
-            $displayMinusWords[$allMinusWordsHash[$word]] = $word;
-        }
-        foreach ($phrase->getAdditionalMinusWords() as $word) {
+        foreach ($phrase->getAllMinusWords() as $word) {
             $displayMinusWords[$allMinusWordsHash[$word]] = $word;
         }
 
         return array_merge($phrase->getDisplayOrdinaryWords(), $displayMinusWords);
     }
 
-    public function getTableHeader(int $columnNumber): array
+    public function getTableHeader(): array
     {
-        $headers = range(1, $columnNumber - 1);
+        if (count($this->phraseTableHeaders)) {
+            return $this->phraseTableHeaders;
+        }
+
+        $rows = $this->getTableRows();
+        if (count($rows) < 1) {
+            return [];
+        }
+
+        $headers = range(1, count($rows[0]) - 1);
         array_unshift($headers, "#");
 
         return $headers;
@@ -116,5 +140,10 @@ class PhraseProcessor
         $rows = array_map(fn($phrase) => (string) $phrase, $phrases);
 
         return join("\n", $rows);
+    }
+
+    public function isEmptyProcessResult(): bool
+    {
+        return 0 === count($this->processedPhrases);
     }
 }

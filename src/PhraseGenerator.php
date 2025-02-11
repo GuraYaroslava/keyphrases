@@ -13,11 +13,11 @@ class PhraseGenerator
             $maxOrdinaryWordsNumber = 0;
             foreach ($elements as $element) {
                 $words = $element->getOrdinaryWords();
-                $maxWordsNumber = max($maxOrdinaryWordsNumber, count($words));
+                $maxOrdinaryWordsNumber = max($maxOrdinaryWordsNumber, count($words));
             }
 
             foreach ($elements as $element) {
-                $element->setMaxDisplayOrdinaryWordsNumber($maxWordsNumber);
+                $element->setMaxDisplayOrdinaryWordsNumber($maxOrdinaryWordsNumber);
             }
 
             return $elements;

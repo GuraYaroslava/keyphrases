@@ -40,24 +40,29 @@ class GenerateKeyphrasesCommand extends Command
         }
 
         if ("" === $inputText) {
+            $message = "Source data is empty!";
+            $output->writeln([$message]);
+
             return Command::SUCCESS;
         }
 
         $groups = explode("\n", trim($inputText));
         $phrases = PhraseGenerator::generate($groups);
         $phraseProcessor = new PhraseProcessor($phrases);
+        $phraseProcessor->run();
+
+        if ($phraseProcessor->isEmptyProcessResult()) {
+            $message = "Generation result is empty!";
+            $output->writeln([$message]);
+
+            return Command::SUCCESS;
+        }
 
         $display = $input->getOption("display");
         if ($display) {
-            $rows = $phraseProcessor->getTableRows();
-            if (count($rows) < 1) {
-                return Command::SUCCESS;
-            }
-
             $table = new Table($output);
-            $table->addRows($rows);
-            $headers = $phraseProcessor->getTableHeader(count($rows[0]));
-            $table->setHeaders($headers);
+            $table->addRows($phraseProcessor->getTableRows());
+            $table->setHeaders($phraseProcessor->getTableHeader());
             $table->render();
         }
 
@@ -66,7 +71,6 @@ class GenerateKeyphrasesCommand extends Command
         if (!$filesystem->exists($directory)) {
             $filesystem->mkdir($directory);
         }
-
         $filename = "phrases_" . date("Y-m-d_H-i-s") . ".csv";
         $filepath = $directory . "/" . $filename;
         $content = $phraseProcessor->getCSV();

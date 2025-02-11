@@ -64,7 +64,8 @@ class Element
                 self::processWords($subWords, $processedWords);
             } else {
                 $wordHead = mb_substr($correctWord, 0, 1);
-                if (mb_strlen($correctWord) <= 2 && $wordHead !== '+') {
+                $isValidWordHead = self::isValidWordHead($wordHead);
+                if (mb_strlen($correctWord) <= 2 && !$isValidWordHead) {
                     $correctWord = '+' . $correctWord;
                 }
 
@@ -79,12 +80,17 @@ class Element
         $wordHead = mb_substr($word, 0, 1);
         $wordBody = mb_substr($word, 1);
 
-        if ($wordHead === '-' || $wordHead === '+' || $wordHead === '!') {
+        if (self::isValidWordHead($wordHead)) {
             $correctedWord = $wordHead . preg_replace('/[^\p{L}\p{N}]/u', ' ', $wordBody);
         } else {
             $correctedWord = preg_replace('/[^\p{L}\p{N}]/u', ' ', $word);
         }
 
         return trim($correctedWord);
+    }
+
+    private static function isValidWordHead($wordHead)
+    {
+        return $wordHead === '-' || $wordHead === '+' || $wordHead === '!';
     }
 }
